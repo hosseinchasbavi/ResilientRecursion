@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sequence-calc
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sequence-calc
+  template:
+    metadata:
+      labels:
+        app: sequence-calc
+    spec:
+      containers:
+      - name: server
+        image: your-registry/sequence-calc:latest
+        ports:
+        - containerPort: 8080
+        resources:
+          limits:
+            cpu: 50m
+            memory: 64Mi
+          requests:
+            cpu: 50m
+            memory: 64Mi
+        env:
+        - name: PORT
+          value: "8080"
+        - name: REDIS_ADDR
+          value: "redis:6379"
+        - name: POD_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: TOTAL_PODS
+          value: "3"
+        - name: GOGC
+          value: "50"
+        - name: GOMAXPROCS
+          value: "1"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
