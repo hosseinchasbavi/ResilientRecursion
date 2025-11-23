@@ -6,7 +6,7 @@ import (
     "net/http"
     "time"
 
-    "github.com/yourusername/sequence-calc/internal/engine"
+    "resilientrecursion/internal/engine"
 )
 
 type Server struct {

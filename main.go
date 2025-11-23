@@ -3,13 +3,21 @@ package main
 
 import (
 	"context"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
+	"hash/fnv"
 	"log"
+	"math"
+	"net/http"
 	"os"
 	"os/signal"
+	"sort"
+	"sync"
 	"syscall"
+	"time"
 
-	"ResilientRecursion/internal/engine"
-	"ResilientRecursion/internal/server"
+	"github.com/redis/go-redis/v9"
 )
 
 // Request represents incoming calculation request
@@ -368,7 +376,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 
 func main() {
 	// Configuration from environment
-	port := getEnv("PORT", "8080")
+	port := getEnv("PORT", "2586")
 	redisAddr := getEnv("REDIS_ADDR", "localhost:6379")
 	podID := getEnv("POD_ID", "pod-0")
 	totalPods := getEnvInt("TOTAL_PODS", 3)
