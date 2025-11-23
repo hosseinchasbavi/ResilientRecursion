@@ -2,8 +2,15 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sequence-calc
+  labels:
+    app: sequence-calc
 spec:
   replicas: 3
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   selector:
     matchLabels:
       app: sequence-calc
@@ -15,8 +22,11 @@ spec:
       containers:
       - name: server
         image: your-registry/sequence-calc:latest
+        imagePullPolicy: IfNotPresent
         ports:
-        - containerPort: 8080
+        - name: http
+          containerPort: 8080
+          protocol: TCP
         resources:
           limits:
             cpu: 50m
@@ -43,11 +53,20 @@ spec:
           httpGet:
             path: /health
             port: 8080
+            scheme: HTTP
           initialDelaySeconds: 10
           periodSeconds: 10
+          timeoutSeconds: 5
+          successThreshold: 1
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /health
             port: 8080
+            scheme: HTTP
           initialDelaySeconds: 5
           periodSeconds: 5
+          timeoutSeconds: 3
+          successThreshold: 1
+          failureThreshold: 3
+        terminationGracePeriodSeconds: 30
