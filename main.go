@@ -27,8 +27,6 @@ type Request struct {
 }
 
 type Response struct {
-	R      float64 `json:"r"`
-	N      int     `json:"n"`
 	Result float64 `json:"result"`
 }
 
@@ -352,7 +350,7 @@ func (s *Server) handleCalculate(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Compute error: %v", err)
 				continue
 			}
-			responses = append(responses, Response{R: r, N: n, Result: result})
+			responses = append(responses, Response{Result: result})
 		}
 	}
 
