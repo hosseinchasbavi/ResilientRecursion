@@ -341,7 +341,7 @@ func (s *Server) handleCalculate(w http.ResponseWriter, r *http.Request) {
 
 	// Compute results
 	ctx := r.Context()
-	responses := make([]Response, 0, len(requests))
+	totalSum := 0.0
 
 	for r, nValues := range grouped {
 		for _, n := range nValues {
@@ -350,12 +350,14 @@ func (s *Server) handleCalculate(w http.ResponseWriter, r *http.Request) {
 				log.Printf("Compute error: %v", err)
 				continue
 			}
-			responses = append(responses, Response{Result: result})
+			totalSum += result
 		}
 	}
 
+	var response = Response{Result: totalSum}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(responses)
+	json.NewEncoder(w).Encode(response)
 }
 
 func (s *Server) handleHealth(w http.ResponseWriter, r *http.Request) {
