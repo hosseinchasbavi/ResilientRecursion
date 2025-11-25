@@ -5,12 +5,12 @@ metadata:
   labels:
     app: sequence-calc
 spec:
-  type: ClusterIP
+  type: LoadBalancer  
   ports:
-  - port: 8080
-    targetPort: 8080
+  - port: 2586
+    targetPort: 2586
     protocol: TCP
     name: http
   selector:
-    app: sequence-calc
+    app: resilientrecursion
   sessionAffinity: None

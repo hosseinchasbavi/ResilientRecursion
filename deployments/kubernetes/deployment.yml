@@ -1,72 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sequence-calc
+  name: resilientrecursion
   labels:
-    app: sequence-calc
+    app: resilientrecursion
 spec:
   replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
   selector:
     matchLabels:
-      app: sequence-calc
+      app: resilientrecursion
   template:
     metadata:
       labels:
-        app: sequence-calc
+        app: resilientrecursion
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
-      - name: server
-        image: your-registry/sequence-calc:latest
-        imagePullPolicy: IfNotPresent
+      - name: resilientrecursion
+        image: docker.io/hosseinchb/resilientrecursion
         ports:
-        - name: http
-          containerPort: 8080
-          protocol: TCP
+        - containerPort: 2586
         resources:
           limits:
-            cpu: 50m
-            memory: 64Mi
+            memory: "64Mi"
+            cpu: "50m"
           requests:
-            cpu: 50m
-            memory: 64Mi
-        env:
-        - name: PORT
-          value: "8080"
-        - name: REDIS_ADDR
-          value: "redis:6379"
-        - name: POD_ID
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: TOTAL_PODS
-          value: "3"
-        - name: GOGC
-          value: "50"
-        - name: GOMAXPROCS
-          value: "1"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 8080
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 10
-          timeoutSeconds: 5
-          successThreshold: 1
-          failureThreshold: 3
+            memory: "64Mi"
+            cpu: "50m"
         readinessProbe:
           httpGet:
             path: /health
-            port: 8080
-            scheme: HTTP
+            port: 2586
           initialDelaySeconds: 5
-          periodSeconds: 5
-          timeoutSeconds: 3
-          successThreshold: 1
-          failureThreshold: 3
-        terminationGracePeriodSeconds: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 2586
+          initialDelaySeconds: 10
+          periodSeconds: 10
