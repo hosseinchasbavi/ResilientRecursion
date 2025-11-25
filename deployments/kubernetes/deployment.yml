@@ -18,6 +18,13 @@ spec:
       containers:
       - name: resilientrecursion
         image: docker.io/hosseinchb/resilientrecursion
+        env:
+          - name: REDIS_ADDR
+            value: "redis:6379"
+          - name: POD_ID
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.name
         ports:
         - containerPort: 2586
         resources:
@@ -31,8 +38,8 @@ spec:
           httpGet:
             path: /health
             port: 2586
-          initialDelaySeconds: 5
-          periodSeconds: 10
+          initialDelaySeconds: 3
+          periodSeconds: 5
         livenessProbe:
           httpGet:
             path: /health
